@@ -214,7 +214,12 @@ RSC route → prefetch trpc.x.queryOptions()
 
 ## 👥 Contributions
 
-**Nathan Vu** — predictive ML pipeline (feature engineering, risk model, PV fault API integration, route optimizer) · live deployment
+| Team Member | Role |
+|-------------|------|
+| **[Nathan Vu](https://www.linkedin.com/in/nathanvuswinburne/)** | Predictive ML pipeline · feature engineering · risk model · PV fault API integration · route optimizer · live deployment support |
+| **[Minh Nguyen](https://www.linkedin.com/in/minh-nguyen-521998276/)** | Predictive ML pipeline · feature engineering · initial UI · pitch |
+| **[Simon Nguyen](https://www.linkedin.com/in/simon-nguyen-7836822b5/)** | UI design & implementation · deployment |
+| **[Catherine Pham](https://www.linkedin.com/in/catherine-pham-4654a12a9/)** | Data sourcing · business domain research · pitch |
 
 ---
 
