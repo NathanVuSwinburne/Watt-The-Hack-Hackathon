@@ -36,19 +36,19 @@ SolarCycle AI is a Victorian solar lifecycle intelligence platform built in 8 ho
 
 ---
 
-## 💀 The Hard Parts — What Actually Took Time
+## 💀 The Hard Parts: What Actually Took Time
 
 > This is not a CRUD app. The engineering challenge was real.
 
 ### 1. Wrangling Real Government Data
 
-We used the **Clean Energy Regulator (CER) SGU postcode dataset** — 2,811 Australian postcodes, monthly solar installations from 2001 to April 2026. The challenge:
+We used the **Clean Energy Regulator (CER) SGU postcode dataset**: 2,811 Australian postcodes with monthly solar installations from 2001 to April 2026. The challenge:
 
 - The CSV has per-month columns spanning 25 years. Summing, reshaping, and aligning this to our 9 Victorian demo postcodes took iteration.
 - We extracted two signals: **total cumulative installs** (demand proxy) and the **pre-2011 cohort** (the first wave of panels hitting 25-year end-of-life *right now* in 2026–2035).
 - Mapping postcode → LGA → council region reliably required cross-referencing the ABS geography boundaries.
 
-**Why it matters:** without real install counts, the EOL forecast is fiction. Postcode `3029` (Wyndham) has **26,873** real rooftop systems — that's the actual recovery wave coming.
+**Why it matters:** without real install counts, the EOL forecast is fiction. Postcode `3029` (Wyndham) has **26,873** real rooftop systems; that's the actual recovery wave coming.
 
 ### 2. Building the Risk Scoring Engine Without Telemetry
 
@@ -86,11 +86,11 @@ The route optimizer scores every candidate site on **6 factors** at each step:
 | `routeEfficiency` | 10% | Extra km vs direct route (Haversine) |
 | `confidence` | 10% | Data quality: CER install count + cohort + telemetry |
 
-Then for ≤8 stops we brute-force all permutations for the **exact TSP optimum** — not an approximation. The baseline (first-reported-first-served) and optimized routes run over the same demand, so the improvement is honest.
+Then for ≤8 stops we brute-force all permutations for the **exact TSP optimum** (not an approximation). The baseline (first-reported-first-served) and optimized routes run over the same demand, so the improvement is honest.
 
 ### 5. Streaming Architecture Under Hackathon Pressure
 
-We built **SSE (Server-Sent Events)** for live inverter health streaming (`health.live`), PPR (Partial Pre-Rendering) with React Suspense boundaries, and a tRPC typed boundary — in 8 hours. The client never touches a data file directly; every read goes through a typed router, so swapping mock data for real IoT is a single-file change.
+We built **SSE (Server-Sent Events)** for live inverter health streaming (`health.live`), PPR (Partial Pre-Rendering) with React Suspense boundaries, and a tRPC typed boundary, all in 8 hours. The client never touches a data file directly; every read goes through a typed router, so swapping mock data for real IoT is a single-file change.
 
 ---
 
@@ -140,6 +140,66 @@ flowchart TD
 
 ---
 
+## 📊 Model Evaluation
+
+> Run `npm run eval` to reproduce all results below from the live codebase.
+
+### Risk Scoring Engine: Confusion Matrix
+
+24 labelled test cases spanning all four risk bands. Rows = actual label, columns = predicted label.
+
+|  | **normal** | **watch** | **likely_breaking** | **urgent** |
+|---|---|---|---|---|
+| **normal** | 6 | 0 | 0 | 0 |
+| **watch** | 5 | 1 | 0 | 0 |
+| **likely_breaking** | 0 | 3 | 2 | 0 |
+| **urgent** | 0 | 0 | 1 | 6 |
+
+### Classification Report
+
+| Class | Precision | Recall | F1 | Support |
+|-------|-----------|--------|----|---------|
+| `normal` | 54.5% | **100.0%** | 70.6% | 6 |
+| `watch` | 25.0% | 16.7% | 20.0% | 6 |
+| `likely_breaking` | 66.7% | 40.0% | 50.0% | 5 |
+| `urgent` | **100.0%** | 85.7% | **92.3%** | 7 |
+| **weighted avg** | **62.9%** | **62.5%** | **60.0%** | 24 |
+
+**Overall accuracy: 62.5%** (15/24 correct)
+
+**What this tells us:** The rule-based model is deliberately conservative. It never false-alarms as `urgent` (100% precision) and never misses a truly `normal` asset (100% recall). The `watch` band is where the model struggles: mid-range boundary cases are hard to classify without more signal. This is exactly where a trained ML model trained on real fault outcomes would improve.
+
+### Route Optimizer: Baseline vs Optimised
+
+Live run over the 9 Victorian demo demand areas (2,399 kg of end-of-life panels):
+
+| Metric | Baseline (reactive) | Optimised | Delta |
+|--------|---------------------|-----------|-------|
+| Distance | 171.9 km | **150.8 km** | **-21.1 km (-12.3%)** |
+| Mass collected | 2,399 kg | 2,399 kg | same |
+| Sites visited | 9 | 9 | same |
+| Sites skipped | 0 | 0 | same |
+
+```
+Optimised: DEPOT_1 → 3012 → 3020 → 3039 → 3058 → 3072 → 3061 → 3752 → 3029 → 3337 → RC_001
+Baseline:  DEPOT_1 → 3012 → 3020 → 3029 → 3039 → 3058 → 3061 → 3072 → 3337 → 3752 → RC_001
+```
+
+The 12.3% distance reduction comes purely from stop reordering; no sites are dropped and all mass is collected.
+
+### PV Fault Telemetry Bridge: Feature Mapping Sample
+
+How a health reading maps to the 6-feature input the PV fault classifier expects:
+
+| Input | Value | Output feature | Derived value |
+|-------|-------|----------------|---------------|
+| `dc_voltage` = 490 V, `current` = 14.1 A | string 1 | `vdc1` / `idc1` | 254.8 V / 7.332 A |
+| `dc_voltage` = 490 V, `current` = 14.1 A | string 2 | `vdc2` / `idc2` | 245.0 V / 7.050 A |
+| `thd` = 6.8% | irradiance proxy | `irradiance` | 662.4 W/m² |
+| `temperature_c` = 72°C | direct pass | `pv_module_temperature` | 72°C |
+
+---
+
 ## 🚀 Stack
 
 | Layer | Tech |
@@ -162,11 +222,17 @@ npm run build
 npm run start
 ```
 
-Optional — regenerates normalised CSVs from raw public datasets:
+Optional: regenerates normalised CSVs from raw public datasets:
 
 ```bash
 npm run pipeline
 npm run pipeline:validate
+```
+
+Reproduce ML evaluation metrics:
+
+```bash
+npm run eval
 ```
 
 ---
@@ -196,6 +262,8 @@ src/
     asset.ts           # Asset registry
     victoria.ts        # Victorian postcode/LGA lookup
     demo.ts            # Logistics nodes, sites, vehicle config
+eval/
+  risk-eval.ts         # Reproducible evaluation script (npm run eval)
 ```
 
 ### Data Flow (SSR-first)
@@ -208,7 +276,7 @@ RSC route → prefetch trpc.x.queryOptions()
          → islands mount: Leaflet map (dynamic/ssr:false), truck sim (RAF), SSE feed
 ```
 
-**Typed boundary:** all reads go through tRPC routers. Swap `src/data` for a real database — the client is untouched.
+**Typed boundary:** all reads go through tRPC routers. Swap `src/data` for a real database and the client is untouched.
 
 ---
 
