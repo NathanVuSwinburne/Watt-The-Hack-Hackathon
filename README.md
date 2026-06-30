@@ -24,6 +24,43 @@
 
 ---
 
+## 🖥️ App Preview
+
+### SolarCycle AI Platform
+
+![SolarCycle AI landing page](assets/landing_page.png)
+
+### From Solar Waste to Smarter Recovery
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="assets/Solar_panel_component_break_down.png" alt="Breakdown of recoverable solar panel components" />
+      <br />
+      <strong>Recoverable components</strong> — material composition and end-of-life value inside each panel.
+    </td>
+    <td width="50%">
+      <img src="assets/problem.png" alt="Victorian solar installation and end-of-life data" />
+      <br />
+      <strong>The problem</strong> — real Victorian installation data reveals the approaching end-of-life wave.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="assets/solution_idea.png" alt="Solar asset fault prediction and collection planning interface" />
+      <br />
+      <strong>The solution</strong> — predict asset failure and turn telemetry into a collection plan.
+    </td>
+    <td width="50%">
+      <img src="assets/demo.png" alt="SolarCycle AI route optimization demo" />
+      <br />
+      <strong>The demo</strong> — compare reactive collection with the optimized SolarCycle AI route.
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 🎯 What It Does
 
 SolarCycle AI is a Victorian solar lifecycle intelligence platform built in 8 hours at the Watt The Hack energy-AI hackathon. It answers three questions that today have no good answer:
