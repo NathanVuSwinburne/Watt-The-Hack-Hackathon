@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Orbitron&weight=700&size=28&duration=3500&pause=800&color=F5A623&center=true&vCenter=true&multiline=true&width=720&height=110&lines=☀️+SolarCycle+AI;Predict.+Optimize.+Recover.;Watt+The+Hack+2025+·+Top+10+of+32+Teams" alt="SolarCycle AI" />
+<img src="https://readme-typing-svg.demolab.com?font=Orbitron&amp;weight=700&amp;size=28&amp;duration=3500&amp;pause=800&amp;color=F5A623&amp;center=true&amp;vCenter=true&amp;multiline=true&amp;width=720&amp;height=110&amp;lines=%E2%98%80%EF%B8%8F%20SolarCycle%20AI%3BPredict.%20Optimize.%20Recover.%3BWatt%20The%20Hack%202025%20%C2%B7%20Top%2010%20of%2032%20Teams" alt="SolarCycle AI" />
 
 <br/>
 
