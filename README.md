@@ -208,21 +208,35 @@ flowchart TD
 
 ### Route Optimizer: Baseline vs Optimised
 
-Live run over the 9 Victorian demo demand areas (2,399 kg of end-of-life panels):
+The live demo gives both trucks the same job: collect the same payload from the same
+postcode demand areas, with no duplicate postcode pickups. The reactive baseline makes
+four depot-to-recycler trips as fault reports arrive. SolarCycle AI combines the work
+into one planned collection campaign.
 
-| Metric | Baseline (reactive) | Optimised | Delta |
-|--------|---------------------|-----------|-------|
-| Distance | 171.9 km | **150.8 km** | **-21.1 km (-12.3%)** |
-| Mass collected | 2,399 kg | 2,399 kg | same |
-| Sites visited | 9 | 9 | same |
-| Sites skipped | 0 | 0 | same |
+| Metric | Reactive (today) | SolarCycle AI | Gain |
+|--------|------------------|---------------|------|
+| When you act | After failure | **~21 days early** | Predictive |
+| Dispatch | 4 reactive trips | **1 campaign** | Coordinated |
+| Postcode revisits | 0 duplicate stops | **0 duplicate stops** | Fair comparison |
+| Route distance | 370.7 km | **204.1 km** | **-45%** |
+| Estimated cost per run | A$889 | **A$445** | **-50%** |
+| Mass recovered | 2,399 kg | **2,399 kg** | Same |
+| Asset record | None | **Digital passport** | Provable |
 
-```
-Optimised: DEPOT_1 → 3012 → 3020 → 3039 → 3058 → 3072 → 3061 → 3752 → 3029 → 3337 → RC_001
-Baseline:  DEPOT_1 → 3012 → 3020 → 3029 → 3039 → 3058 → 3061 → 3072 → 3337 → 3752 → RC_001
-```
+> **No real mass data:** This dataset contains no weighed mass. Every kilogram figure,
+> including per-site end-of-life mass and recovered totals, is a synthetic estimate
+> derived from CER installation counts and pre-2011 end-of-life cohort counts.
 
-The 12.3% distance reduction comes purely from stop reordering; no sites are dropped and all mass is collected.
+**Data provenance:** Phase 1 uses real public data for postcode-level solar installation
+context, product mix, and facility locations. Site locations, risk scores, collection
+status, mass, end-of-life windows, collection windows, route distances, costs, and
+facility processing capacity are illustrative demo assumptions. CER data supports only
+postcode-level installation counts and age cohorts, so each postcode demand area is
+collected once in both routes. Depot and recycling-centre locations are from the public
+sites for Cleanaway Laverton and Lotus Recycling in Campbellfield. Road geometry uses
+the public OSRM router, with a straight-line fallback when offline. Solar-specific
+acceptance and daily processing capacity remain assumptions unless verified with the
+facility operator. CER SRES postcode data is current to April 2026.
 
 ### PV Fault Telemetry Bridge: Feature Mapping Sample
 
